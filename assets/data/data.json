@@ -16,5 +16,53 @@
     "name": "Tesla",
     "price": 800000000000,
     "image": "https://financialmodelingprep.com/image-stock/TSLA.png"
+  },
+  {
+    "id": "nvidia",
+    "name": "NVIDIA",
+    "price": 3000000000000,
+    "image": "https://financialmodelingprep.com/image-stock/NVDA.png"
+  },
+  {
+    "id": "google",
+    "name": "Google",
+    "price": 2100000000000,
+    "image": "https://financialmodelingprep.com/image-stock/GOOGL.png"
+  },
+  {
+    "id": "amazon",
+    "name": "Amazon",
+    "price": 1900000000000,
+    "image": "https://financialmodelingprep.com/image-stock/AMZN.png"
+  },
+  {
+    "id": "meta",
+    "name": "Meta (Facebook)",
+    "price": 1200000000000,
+    "image": "https://financialmodelingprep.com/image-stock/META.png"
+  },
+  {
+    "id": "walmart",
+    "name": "Walmart",
+    "price": 600000000000,
+    "image": "https://financialmodelingprep.com/image-stock/WMT.png"
+  },
+  {
+    "id": "netflix",
+    "name": "Netflix",
+    "price": 280000000000,
+    "image": "https://financialmodelingprep.com/image-stock/NFLX.png"
+  },
+  {
+    "id": "cocacola",
+    "name": "Coca-Cola",
+    "price": 270000000000,
+    "image": "https://financialmodelingprep.com/image-stock/KO.png"
+  },
+  {
+    "id": "mcdonalds",
+    "name": "McDonald's",
+    "price": 190000000000,
+    "image": "https://financialmodelingprep.com/image-stock/MCD.png"
   }
 ]
