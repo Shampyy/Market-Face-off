@@ -6,10 +6,12 @@ console.log("Hra se načítá...");
  let currentLeftItem;
  let currentRightItem;
  let score = 0;
+ let waiting = false;
 
 
 // Výběr prvků z HTML (DOM Selector)
 const countElement = document.getElementById("count");
+const vsElement = document.querySelector(".vs");
 
 const leftNameElement = document.getElementById('left_name');
 const leftImageElement = document.getElementById('left_image');
@@ -17,6 +19,7 @@ const leftMarketCapElement = document.getElementById('left_marketCap');
 
 const rightNameElement = document.getElementById('right_name');
 const rightImageElement = document.getElementById('right_image');
+const rightMarketCapElement = document.getElementById('right_marketCap');
 
 const buttonHigherElement = document.getElementById('btn_higher');
 const buttonLowerElement = document.getElementById('btn_lower');
@@ -40,6 +43,7 @@ const buttonLowerElement = document.getElementById('btn_lower');
          currentRightItem = getRandomItem();
      } while (currentLeftItem.id === currentRightItem.id);
 
+     waiting = false;
      renderGame(currentLeftItem, currentRightItem);
  }
 
@@ -57,6 +61,7 @@ const buttonLowerElement = document.getElementById('btn_lower');
 
      rightNameElement.textContent = itemRight.name;
      rightImageElement.src = itemRight.image;
+     rightMarketCapElement.textContent = "";
  }
 
  // Funkce pro vygenerování random čísla pro výběr firem
@@ -67,6 +72,13 @@ const buttonLowerElement = document.getElementById('btn_lower');
 
  // FUNKCE PRO KONTROLU
 function checkAnswer(guess) {
+
+     if (waiting === true) {
+         return;
+     }
+
+     waiting = true;
+
     const priceLeft = currentLeftItem.price;
     const priceRight = currentRightItem.price;
 
@@ -85,25 +97,72 @@ function checkAnswer(guess) {
         }
     }
 
-    // Pokud je odpověď správná, provedeme posun a nové kolo
-    if (jeToSpravne) {
-        score++;
-        updateScoreDisplay();
-        currentLeftItem = currentRightItem;
+    animateValue(rightMarketCapElement, 0, priceRight, 1500);
 
-        do {
-            currentRightItem = getRandomItem();
-        } while (currentLeftItem.id === currentRightItem.id);
+    // kolečko se zbarví podle toho, jestli je to správně nebo špatně
+    setTimeout(() => {
+        if (jeToSpravne) {
+            vsElement.classList.add('correct');
+        } else {
+            vsElement.classList.add('wrong');
+        }
+    },1500);
 
-        renderGame(currentLeftItem, currentRightItem);
-    }else{
-        alert(`Konec hry! Tvé konečné score je: ${score}`)
-        score = 0;
-        updateScoreDisplay();
+    // Pokud je odpověď správná, provedeme posun a nové kolo po uplinutí timeru
+    setTimeout(() => {
+        if (jeToSpravne) {
+            score++;
+            updateScoreDisplay();
 
-        startNewGame();
-    }
+            currentLeftItem = currentRightItem;
 
+            do {
+                currentRightItem = getRandomItem();
+            } while (currentLeftItem.id === currentRightItem.id);
+
+            renderGame(currentLeftItem, currentRightItem);
+            waiting = false;
+        }else{
+            alert(`Konec hry! Tvé konečné score je: ${score}`)
+            score = 0;
+            updateScoreDisplay();
+
+            startNewGame();
+        }
+
+        vsElement.classList.remove('correct');
+        vsElement.classList.remove('wrong');
+
+        rightMarketCapElement.textContent = "";
+
+
+    }, 2500);
+
+}
+
+// přidání animace čísel
+function animateValue(element, start, end, duration) {
+
+     const frameDuration = 20;
+     const totalFrames = duration / frameDuration;
+     const increment = (end - start) / totalFrames;
+
+     let current = start;
+
+     const timer = setInterval(() => {
+         current += increment;
+
+         if (current >= end) {
+             current = end;
+             clearInterval(timer);
+         }
+
+         element.textContent = current.toLocaleString("en-US", {
+             style: "currency",
+             currency: "USD",
+             maximumFractionDigits: 0
+         });
+     }, frameDuration);
 }
 
  buttonHigherElement.addEventListener('click', () => {

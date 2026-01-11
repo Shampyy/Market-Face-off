@@ -101,7 +101,21 @@ header h1 {
     border: 5px solid #222;
     z-index: 20;
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
+
+    transition: background-color 0.5s, color 0.5s, border-color 0.5s;
 }
+/* zde přidáme barvy podle toho, jestli bylo uhádnuto správně, nebo špatně */
+.correct {
+    background-color: #28a745;
+    color: white;
+    border-color: #1e7e34;
+}
+.wrong {
+    background-color: #d11616;
+    color: white;
+    border-color: #971111;
+}
+
 
 /* Tlačítka */
 button {
