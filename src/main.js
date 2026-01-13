@@ -69,6 +69,7 @@ async function init() {
 
         // Připravíme data pro hru na pozadí
         beginNewGame();
+        setupImageErrorHandling();
     } catch (error) {
         console.error("Chyba při načítání dat:", error);
     }
@@ -106,8 +107,8 @@ function checkAnswer(guess) {
 
     // 1. Vyhodnocení správnosti
     let isCorrect = false;
-    if (guess === "higher" && priceLeft < priceRight) isCorrect = true;
-    else if (guess === "lower" && priceLeft > priceRight) isCorrect = true;
+    if (guess === "higher" && priceLeft <= priceRight) isCorrect = true;
+    else if (guess === "lower" && priceLeft >= priceRight) isCorrect = true;
 
     // 2. Animace čísla
     animateValue(DOM.right.price, 0, priceRight, 1500);
@@ -144,9 +145,11 @@ function handleWin() {
         nextItem = getRandomItem();
     } while (nextItem.id === state.currentRightItem.id || nextItem.id === state.currentLeftItem.id);
 
+    preloadImage(getLogoUrl(nextItem.image));
+
     // B) Vykreslíme ji do skryté "Next" karty
     DOM.next.name.textContent = nextItem.name;
-    DOM.next.image.src = nextItem.image;
+    DOM.next.image.src = getLogoUrl(nextItem.image);
     DOM.next.price.textContent = "";
 
     // C) Spustíme animaci (posun karet)
@@ -199,12 +202,12 @@ function getRandomItem() {
 function renderGame(itemLeft, itemRight) {
     // Levá karta
     DOM.left.name.textContent = itemLeft.name;
-    DOM.left.image.src = itemLeft.image;
+    DOM.left.image.src = getLogoUrl(itemLeft.image);
     DOM.left.price.textContent = formatCurrency(itemLeft.price);
 
     // Pravá karta (cenu schováme)
     DOM.right.name.textContent = itemRight.name;
-    DOM.right.image.src = itemRight.image;
+    DOM.right.image.src = getLogoUrl(itemRight.image);
     DOM.right.price.textContent = "";
 }
 
@@ -232,6 +235,46 @@ function toggleButtons(show) {
         DOM.buttons.higher.classList.add('hidden');
         DOM.buttons.lower.classList.add('hidden');
     }
+}
+
+// funkce na získáni loga
+function getLogoUrl(domain) {
+    // Brandfetch CDN (Content Delivery Network)
+    return `https://cdn.brandfetch.io/${domain}/w/200/h/200?c=1idFjQ2`;
+}
+// pokud selže načtení loga
+function setupImageErrorHandling() {
+    const defaultImage = "https://cdn-icons-png.flaticon.com/512/550/550595.png";
+
+    // Seznam img elementů
+    const images = [DOM.left.image, DOM.right.image, DOM.next.image];
+
+    images.forEach(img => {
+        img.onerror = function() {
+            const currentSrc = this.src;
+
+            // 1. POKUS: Pokud to byl Brandfetch a selhal, zkusíme Google (Fallback 1)
+            if (currentSrc.includes("brandfetch.io")) {
+                // Vytáhneme doménu z URL (jednoduchý trik - vezmeme část mezi lomítky)
+                // URL je např: https://cdn.brandfetch.io/apple.com/w/200...
+                const domain = currentSrc.split('/')[3];
+
+                // Přepneme na Google API
+                this.src = `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=256`;
+            }
+            // 2. POKUS: Pokud selhal i Google (nebo jiný zdroj), dáme defaultní ikonu (Fallback 2)
+            else {
+                this.src = defaultImage;
+                this.onerror = null; // Konec, už nic nezkoušíme, aby se to nezacyklilo
+            }
+        };
+    });
+}
+
+// Funkce pro načtení obrázku na pozadí
+function preloadImage(url) {
+    const img = new Image();
+    img.src = url;
 }
 
 // Pomocná funkce pro formátování měny
