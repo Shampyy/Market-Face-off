@@ -10,6 +10,8 @@ const state = {
     highScore: localStorage.getItem('marketHighScore') || 0
 };
 
+
+
 /* =========================================
    2. DOM ELEMENTS (Všechny prvky z HTML)
    ========================================= */
@@ -54,6 +56,8 @@ const DOM = {
 
 console.log("Hra se načítá...");
 
+
+
 /* =========================================
    3. INITIALIZATION (Start)
    ========================================= */
@@ -92,6 +96,8 @@ function beginNewGame() {
 
     toggleButtons(true);
 }
+
+
 
 /* =========================================
    4. GAME LOGIC (Herní logika)
@@ -196,6 +202,8 @@ function getRandomItem() {
     return state.gameData[randomIndex];
 }
 
+
+
 /* =========================================
    5. UI FUNCTIONS (Vykreslování)
    ========================================= */
@@ -260,12 +268,11 @@ function setupImageErrorHandling() {
                 const domain = currentSrc.split('/')[3];
 
                 // Přepneme na Google API
-                this.src = `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=256`;
+                this.src = `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${domain}&size=256`;
             }
             // 2. POKUS: Pokud selhal i Google (nebo jiný zdroj), dáme defaultní ikonu (Fallback 2)
             else {
                 this.src = defaultImage;
-                this.onerror = null; // Konec, už nic nezkoušíme, aby se to nezacyklilo
             }
         };
     });
@@ -302,6 +309,8 @@ function animateValue(element, start, end, duration) {
         element.textContent = formatCurrency(current);
     }, frameDuration);
 }
+
+
 
 /* =========================================
    6. EVENT LISTENERS (Ovládání)
