@@ -8,29 +8,56 @@
 </head>
 
 <body>
-<header>
-    <h1> Market Face-off </h1>
-    <h3 id="count"> count: </h3>
-</header>
-
-<main id="game-board">
-    <div class="card">
-        <h1 id="left_name"> odkaz na název firmy </h1>
-        <img id="left_image" src="" alt="Logo firmy">
-        <h3 id="left_marketCap"> odkaz na market cap </h3>
+    <div id="start-screen">
+        <h1 class="text-huge text-green">Market <br>
+            <span class="text-red">Face-off</span>
+        </h1>
+        <h2> Dokážeš určit, která firma je větší?</h2>
+        <p>
+            Vítejte ve hře Market Face-off. Vaším úkolem je uhádnout, která z 2 ukázaných firem ma větší Tržní kapitalizaci
+            (market cap), tedy celkovou hodnota společnosti na burze. Zkuste dosáhnout co nejvyššího skóre!!!
+        </p>
+        <h2>Hodně štěstí!!</h2>
+        <button id="btn_start" class="btn-green"> Start </button>
+        <h3 class="high-score"> High score: 0</h3>
     </div>
 
-    <div class="vs"> VS </div>
+    <div id="game-board" class="hidden">
+        <header>
+            <h1 class="text-huge text-green">Market <br>
+                <span class="text-red">Face-off</span>
+            </h1>
+            <h3 id="count"> count: </h3>
+            <h2 class="high-score"> High score: 0</h2>
+        </header>
 
-    <div class="card">
-        <h1 id="right_name"> odkaz na název firmy</h1>
-        <img id="right_image" src="" alt="Logo firmy">
-        <h3 id="right_marketCap"> odkaz na market cap</h3>
-        <button id="btn_higher"> Higher ▲ </button>
-        <button id="btn_lower"> Lower ▼ </button>
+        <main>
+            <div class="card">
+                <h1 id="left_name"> odkaz na název firmy </h1>
+                <img id="left_image" src="" alt="Logo firmy">
+                <h1 id="left_marketCap"> odkaz na market cap </h1>
+            </div>
+
+            <div class="vs"> VS </div>
+
+            <div class="card">
+                <h1 id="right_name"> odkaz na název firmy</h1>
+                <img id="right_image" src="" alt="Logo firmy">
+                <h1 id="right_marketCap"> odkaz na market cap</h1>
+                <button id="btn_higher" class="btn-green"> Higher ▲ </button>
+                <button id="btn_lower" class="btn-red"> Lower ▼ </button>
+            </div>
+        </main>
     </div>
-</main>
 
-<script type="module" src="src/main.js"></script>
+    <div id="end-screen" class="hidden">
+        <div class="modal-content">
+            <h1> Konec hry!!</h1>
+            <h2 id="final-score"> Tvé konečné skóre je: </h2>
+            <button id="btn_restart" class="btn-green"> Začít novou hru </button>
+        </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
 </body>
 </html>

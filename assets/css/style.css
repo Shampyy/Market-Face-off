@@ -1,71 +1,103 @@
 /* style.css */
 
-/* 1. Základní nastavení celé stránky */
 body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #222;
-    color: white;
-    height: 100vh; /* Celá výška okna */
-
-    /* TOTO JE NOVÉ: Rozložení pod sebe (Sloupec) */
+    background: radial-gradient(circle, #1a2a1a 0%, #000000 100%);
+    color: #e2e8f0;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
-/* 2. Hlavička (To nahoře) */
 header {
-    flex: 0 0 auto; /* Pevná velikost (nenatahuje se) */
-    padding: 20px;
-    background-color: #1a1a1a; /* O něco tmavší než zbytek */
+    flex: 0 0 auto;
+    padding: 1px;
     text-align: center;
-    border-bottom: 2px solid #333;
     z-index: 10;
+
+    background-color: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Tenká linka */
+    backdrop-filter: blur(5px);
 }
 
 header h1 {
     margin: 0;
     font-size: 1.8rem;
-    text-transform: uppercase;
     letter-spacing: 2px;
 }
 
 #count {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: bold;
-    color: #cdcdcd; /* Zlatá barva pro skóre */
+    color: #ffffff;
     margin-top: 10px;
 }
 
-/* 3. Herní plocha (To dole) */
-#game-board {
-    flex: 1; /* Zabere veškeré zbylé místo na výšku! */
-    display: flex; /* Uvnitř chceme věci vedle sebe (Řádek) */
-    position: relative; /* Aby VS vědělo, kde je střed této plochy */
-    width: 100%;
+#start-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400vh;
+}
+#start-screen p {
+    max-width: 600px;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 50px;
+    padding: 0 20px;
+    font-size: 18px;
 }
 
-/* 4. Karty */
+#game-board {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+}
+#game-board main {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    width: 100%;
+    position: relative;
+}
+
+#end-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.60);
+    backdrop-filter: blur(2px);
+    z-index: 21;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
 .card {
-    flex: 1; /* Každá 50% šířky */
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     padding-top: 10vh;
     align-items: center;
     text-align: center;
-    background-color: #2c2c2c;
-    border-right: 1px solid #444;
+    background-color: rgba(255, 255, 255, 0.02);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .card:last-child {
     border-right: none;
-    background-color: #333;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
-/* Obrázky */
 .card img {
     width: 150px;
     height: 150px;
@@ -80,15 +112,16 @@ header h1 {
 .card h1 { font-size: 2rem; margin: 0; }
 .card h3 { font-size: 1.5rem; color: #ddd; }
 
-/* 5. VS Kolečko - Uprostřed herní plochy */
+/* VS Kolečko */
 .vs {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* Přesný střed */
+    transform: translate(-50%, -50%);
 
-    background-color: white;
-    color: #222;
+    background-color: #111;
+    color: #ffffff;
+
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -116,22 +149,97 @@ header h1 {
     border-color: #971111;
 }
 
-
-/* Tlačítka */
 button {
     padding: 15px 30px;
     margin: 10px;
     font-size: 1.1rem;
-    border: 2px solid white;
-    background: transparent;
+
+    background: rgba(255, 255, 255, 0.05); /* Průhledné */
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
+    backdrop-filter: blur(4px);
+
     cursor: pointer;
     border-radius: 50px;
     transition: all 0.2s;
 }
 
 button:hover {
-    background: white;
-    color: #222;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: white;
     transform: scale(1.05);
+}
+
+/* Třídy pro barvu tlačítka */
+.btn-green {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+}
+.btn-green:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    transform: scale(1.05);
+}
+
+.btn-red {
+    background-color: red;
+    border-color: #f44336;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgb(126, 0, 0);
+}
+.btn-red:hover {
+    background-color: #f44336;
+    border-color: #f44336;
+    transform: scale(1.05);
+}
+
+
+/* zde umožníme, aby end-screen měla průhledné pozadí */
+.modal-content {
+    background: #010c00;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    border: 2px solid #555;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    max-width: 90%;
+    width: 400px;
+}
+
+/* Třída pro extra velké nadpisy */
+.text-huge {
+    font-size: 4rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-align: center;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+    margin-bottom: 10px;
+}
+/* Aby se to na mobilu trochu zmenšilo a nelezlo to ven */
+@media (max-width: 600px) {
+    .text-huge {
+        font-size: 2.5rem;
+    }
+}
+
+.text-green {
+    color: #28a745;
+}
+.text-red {
+    color: #d11616;
+}
+
+/* zde umožníme schovat jednotlivé části, podle potřeby (úvod, hru, konec)*/
+.hidden {
+    display: none !important;
+}
+
+/* Tady jen předmět schováme, aby nebyl vidět */
+.invisible {
+    visibility: hidden;
 }
