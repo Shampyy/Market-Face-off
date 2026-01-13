@@ -311,139 +311,145 @@ button:hover {
    ========================================= */
 @media (max-width: 768px) {
 
-    /* 1. ZÁKLAD: Fixní výška obrazovky bez scrollování */
+    /* --- 1. ROZLOŽENÍ OBRAZOVKY --- */
     #game-board {
-        height: 100dvh; /* Dynamic viewport height */
+        height: 100dvh; /* Přesná výška displeje mobilu */
         display: flex;
         flex-direction: column;
-        overflow: hidden;
+        overflow: hidden; /* Zákaz posouvání */
     }
 
-    /* 2. HLAVIČKA: Musí být co nejmenší */
+    /* --- 2. HLAVIČKA (Co nejmenší) --- */
     header {
-        flex: 0 0 auto; /* Nesmršťovat */
-        padding: 5px 0; /* Minimální mezery */
+        flex: 0 0 auto; /* Pevná výška */
+        padding: 5px 0;
+        background: #111; /* Aby byla čitelná */
+        z-index: 50;
     }
 
     header h1 {
-        font-size: 1.2rem; /* Menší nadpis */
+        font-size: 1.1rem; /* Malý nadpis */
         margin: 0;
         line-height: 1.2;
     }
 
     .score-board {
-        font-size: 0.9rem; /* Menší text skóre */
-        margin-top: 5px;
+        margin-top: 2px;
+        font-size: 0.85rem; /* Malé skóre */
         display: flex;
         justify-content: center;
         gap: 15px;
     }
 
-    /* 3. HLAVNÍ PLOCHA: Flexibilní kontejner pro karty */
+    /* --- 3. HLAVNÍ PLOCHA PRO KARTY --- */
     #game-board main {
         flex: 1; /* Zabere veškeré zbylé místo */
         display: flex;
         flex-direction: column;
         position: relative;
         height: auto;
-        min-height: 0; /* Důležité pro flexbox, aby nepřetékal */
+        min-height: 0; /* Důležité pro Flexbox! */
     }
 
-    /* 4. KARTY: Kompaktní a pružné */
+    /* --- 4. KARTY (Horní a Dolní) --- */
     .card {
         width: 100%;
-        flex: 1; /* Každá karta přesně 50% dostupné výšky */
+        flex: 1; /* Každá karta bere přesně 50% dostupného místa */
         display: flex;
         flex-direction: column;
-        justify-content: center; /* Vycentrovat obsah vertikálně */
+        justify-content: center; /* Vycentrovat obsah svisle */
         align-items: center;
-        padding: 10px;
-        height: auto; /* Reset pevné výšky */
+        padding: 5px; /* Minimální padding */
+        min-height: 0; /* Umožní kartě se zmenšit pod obsah */
+        overflow: hidden;
     }
 
-    /* 5. LOGA A TEXTY: Drastické zmenšení */
+    /* Specifická úprava pro dolní kartu, aby tlačítka nelezla přes text */
+    #card-right {
+        justify-content: flex-start; /* Obsah nahoře */
+        padding-top: 20px; /* Odstup od VS kolečka */
+    }
+
+    /* --- 5. OBSAH KARET (Loga a texty) --- */
     .card img {
-        width: 60px;       /* Mnohem menší logo */
-        height: 60px;
-        padding: 12px;
-        margin: 5px 0;     /* Méně místa kolem */
+        height: 50px;       /* Pevná malá výška loga */
+        width: auto;        /* Šířka se dopočítá */
+        object-fit: contain;
+        margin: 5px 0;
+        background: white;
+        border-radius: 50%;
+        padding: 5px;
     }
 
     .card h1 {
-        font-size: 1.1rem; /* Menší název firmy */
-        margin: 0;
-    }
-
-    .text-huge {
-        font-size: 1.6rem; /* Menší cena */
+        font-size: 1rem; /* Název firmy */
         margin: 2px 0;
     }
 
-    /* 6. HRANICE MEZI KARTAMI */
-    #card-left {
-        border-right: none;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-    }
-    #card-right {
-        border-right: none;
+    .text-huge {
+        font-size: 1.3rem; /* Cena */
+        font-weight: bold;
+        margin: 2px 0;
     }
 
-    /* 7. NEXT KARTA (Schovaná) */
-    #card-next {
-        position: absolute;
-        width: 100%;
-        height: 50%;
-        bottom: 0;
-        left: 0;
-        transform: translate(0, 100%);
-        border-top: 2px solid rgba(255, 255, 255, 0.1);
-        z-index: 5;
+    /* SKRYTÍ ZBYTEČNÉHO TEXTU (pokud tam nějaký zbyl) */
+    .card p:not(.text-huge) {
+        display: none;
     }
 
-    /* 8. VS KOLEČKO: Menší a přesně uprostřed karet */
+    /* --- 6. VS KOLEČKO --- */
     .vs {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
-        line-height: 40px;
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+        line-height: 35px;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         z-index: 20;
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        background: #333;
+        border: 2px solid #555;
     }
 
-    /* 9. TLAČÍTKA: Nalepená dole, ale nad systémovou lištou */
+    /* --- 7. TLAČÍTKA (Plovoucí dole) --- */
     .buttons {
-        position: absolute; /* Aby "plavala" nad spodní kartou */
-        bottom: 20px;       /* Odstup od spodu */
+        position: absolute;
+        bottom: 15px; /* Odstup od spodního okraje */
         left: 0;
         width: 100%;
         display: flex;
         justify-content: center;
         gap: 10px;
-        padding: 0 20px;
-        z-index: 30; /* Musí být nad vším */
-        /* Ochrana pro iPhony bez tlačítka (safe area) */
+        padding: 0 15px;
+        z-index: 100;
+        /* Ochrana pro iPhony bez tlačítka (čárka dole) */
         padding-bottom: env(safe-area-inset-bottom);
     }
 
-    #btn-higher, #btn-lower, #btn_higher, #btn_lower { /* Pro jistotu obě ID */
+    /* Styl tlačítek na mobilu */
+    #btn_higher, #btn_lower {
         flex: 1;
-        padding: 12px;
+        padding: 12px 0;
         font-size: 1rem;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        max-width: 160px; /* Aby nebyla tlačítka zbytečně široká */
+        max-width: 140px;
+        border-radius: 25px; /* Kulatá tlačítka vypadají lépe */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
 
-    /* Skryjeme patičku na mobilu, zavazí tam */
-    footer {
-        display: none;
-    }
+    /* Skrytí patičky */
+    footer { display: none; }
 
-    /* Animace */
+    /* Fix pro animace */
     .animating #card-left { transform: translateY(-100%); }
     .animating #card-right { transform: translateY(-100%); }
     .animating #card-next { transform: translateY(0) !important; }
+
+    /* Next karta schovaná dole */
+    #card-next {
+        position: absolute;
+        bottom: 0; left: 0; width: 100%; height: 50%;
+        transform: translate(0, 100%);
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
 }

@@ -199,43 +199,54 @@ async function shareScore() {
     const urlToShare = window.location.href;
     const fullText = `${textToShare}\n${urlToShare}`;
 
-    const shareData = {
-        title: 'Market Cap Game',
-        text: textToShare,
-        url: urlToShare
-    };
+    // 2. Detekce: Je to mobil? (Jednoduchý test)
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    // 2. Pokus o nativní sdílení (Mobil / Safari na Macu)
-    if (navigator.share) {
+    // 3. LOGIKA PRO MOBILY (Nativní sdílení)
+    if (isMobile && navigator.share) {
         try {
-            await navigator.share(shareData);
-            return; // Pokud se povedlo, končíme
+            await navigator.share({
+                title: 'Market Cap Game',
+                text: textToShare,
+                url: urlToShare
+            });
         } catch (err) {
-            console.log("Sdílení zrušeno nebo nepodporováno, zkouším schránku...");
+            // TADY JE TA OPRAVA:
+            // Pokud uživatel sdílení zrušil (zavřel okno), nic neděláme.
+            // Žádný alert, žádná chyba. Prostě ticho. 🤫
+            if (err.name !== 'AbortError') {
+                console.log("Chyba sdílení:", err);
+            }
         }
     }
+    // 4. LOGIKA PRO POČÍTAČE (Rovnou do schránky)
+    else {
+        copyToClipboard(fullText);
+    }
+}
 
-    // 3. Pokus o automatické kopírování (Chrome / PC)
+// Pomocná funkce pro kopírování na počítači
+async function copyToClipboard(text) {
     try {
-        await navigator.clipboard.writeText(fullText);
+        await navigator.clipboard.writeText(text);
 
-        // Vizuální potvrzení na tlačítku
+        // Vizuální efekt: Tlačítko zezelená
         const btn = DOM.buttons.share;
         const originalText = btn.textContent;
-        const originalColor = btn.style.backgroundColor;
 
         btn.textContent = "Zkopírováno! 📋";
         btn.style.backgroundColor = "#28a745"; // Zelená
+        btn.style.transform = "scale(1.05)";
 
         setTimeout(() => {
             btn.textContent = originalText;
-            btn.style.backgroundColor = originalColor;
+            btn.style.backgroundColor = ""; // Reset barvy (vezme si z CSS)
+            btn.style.transform = "";
         }, 2000);
 
     } catch (err) {
-        // 4. POSLEDNÍ ZÁCHRANA: Pokud vše selže (např. spuštěno z disku)
-        // Otevře staré dobré vyskakovací okno, kde si to uživatel zkopíruje sám
-        prompt("Kopírování selhalo. Zkopíruj si text ručně (Cmd+C):", fullText);
+        // Poslední záchrana, kdyby nefungovala schránka (např. starý prohlížeč)
+        prompt("Zkopíruj si výsledek ručně (Cmd+C / Ctrl+C):", text);
     }
 }
 
