@@ -28,7 +28,8 @@ const DOM = {
         start: document.getElementById("btn-start"),
         restart: document.getElementById("btn-restart"),
         higher: document.getElementById("btn-higher"),
-        lower: document.getElementById("btn-lower")
+        lower: document.getElementById("btn-lower"),
+        share: document.getElementById("btn_share")
     },
     // Texty a UI
     score: document.getElementById("count"),
@@ -189,6 +190,55 @@ function handleLoss() {
     resetVsCircle();
 }
 
+async function shareScore() {
+    // 1. Příprava textu
+    let emojiString = "✅".repeat(state.score) + "❌";
+    if (state.score > 10) emojiString = `✅ x ${state.score} ❌`;
+
+    const textToShare = `Nahrál jsem skóre ${state.score} v MarketCap Game! 🚀\n${emojiString}\nDokážeš mě porazit?`;
+    const urlToShare = window.location.href;
+    const fullText = `${textToShare}\n${urlToShare}`;
+
+    const shareData = {
+        title: 'Market Cap Game',
+        text: textToShare,
+        url: urlToShare
+    };
+
+    // 2. Pokus o nativní sdílení (Mobil / Safari na Macu)
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+            return; // Pokud se povedlo, končíme
+        } catch (err) {
+            console.log("Sdílení zrušeno nebo nepodporováno, zkouším schránku...");
+        }
+    }
+
+    // 3. Pokus o automatické kopírování (Chrome / PC)
+    try {
+        await navigator.clipboard.writeText(fullText);
+
+        // Vizuální potvrzení na tlačítku
+        const btn = DOM.buttons.share;
+        const originalText = btn.textContent;
+        const originalColor = btn.style.backgroundColor;
+
+        btn.textContent = "Zkopírováno! 📋";
+        btn.style.backgroundColor = "#28a745"; // Zelená
+
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.backgroundColor = originalColor;
+        }, 2000);
+
+    } catch (err) {
+        // 4. POSLEDNÍ ZÁCHRANA: Pokud vše selže (např. spuštěno z disku)
+        // Otevře staré dobré vyskakovací okno, kde si to uživatel zkopíruje sám
+        prompt("Kopírování selhalo. Zkopíruj si text ručně (Cmd+C):", fullText);
+    }
+}
+
 function checkHighScore() {
     if (state.score > state.highScore) {
         state.highScore = state.score;
@@ -337,6 +387,8 @@ DOM.buttons.restart.addEventListener('click', () => {
 
     beginNewGame();
 });
+
+DOM.buttons.share.addEventListener('click', shareScore);
 
 // Spustíme aplikaci
 init();

@@ -246,6 +246,20 @@ button:hover {
     border-color: #f44336;
 }
 
+.btn-blue {
+    background-color: #1da1f2; /* Pěkná modrá */
+    border-color: #1da1f2;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(29, 161, 242, 0.4);
+    margin-bottom: 20px; /* Odstup od tlačítka Restart */
+}
+.btn-blue:hover {
+    background-color: #0c85d0;
+    border-color: #0c85d0;
+    transform: scale(1.05);
+}
+
 /* =========================================
    6. TYPOGRAPHY (Texty)
    ========================================= */
