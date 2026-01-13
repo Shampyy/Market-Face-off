@@ -65,6 +65,7 @@ header h1 {
     flex: 1;
     width: 100%;
     position: relative;
+    overflow: hidden;
 }
 
 #end-screen {
@@ -79,7 +80,16 @@ header h1 {
     align-items: center;
 }
 
-
+#card-next {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    transform: translateX(100%);
+    border-right: none;
+    z-index: 5;
+}
 
 .card {
     flex: 1;
@@ -91,11 +101,6 @@ header h1 {
     text-align: center;
     background-color: rgba(255, 255, 255, 0.02);
     border-right: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.card:last-child {
-    border-right: none;
-    background-color: rgba(0, 0, 0, 0.2);
 }
 
 .card img {
@@ -242,4 +247,21 @@ button:hover {
 /* Tady jen předmět schováme, aby nebyl vidět */
 .invisible {
     visibility: hidden;
+}
+
+.animating .card {
+    transition: transform 0.8s ease-in-out;
+}
+.animating #card-left {
+    transform: translateX(-100%);
+}
+.animating #card-right {
+    transform: translateX(-100%);
+}
+.animating #card-next {
+    transform: translateX(0%);
+}
+.animating .vs {
+    opacity: 0;
+    transition: opacity 0.3s;
 }

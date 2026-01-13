@@ -15,6 +15,7 @@ console.log("Hra se načítá...");
  const startScreenElement = document.getElementById("start-screen");
  const gameBoardElement = document.getElementById("game-board");
  const endScreenElement = document.getElementById("end-screen");
+ const mainElement = document.querySelector("#game-board main");
 
 const countElement = document.getElementById("count");
 const vsElement = document.querySelector(".vs");
@@ -27,6 +28,10 @@ const leftMarketCapElement = document.getElementById('left_marketCap');
 const rightNameElement = document.getElementById('right_name');
 const rightImageElement = document.getElementById('right_image');
 const rightMarketCapElement = document.getElementById('right_marketCap');
+
+ const nextNameElement = document.getElementById('next_name');
+ const nextImageElement = document.getElementById('next_image');
+ const nextMarketCapElement = document.getElementById('next_marketCap');
 
 const buttonHigherElement = document.getElementById('btn_higher');
 const buttonLowerElement = document.getElementById('btn_lower');
@@ -139,18 +144,43 @@ function checkAnswer(guess) {
             score++;
             updateScoreDisplay();
 
-            currentLeftItem = currentRightItem;
+            //pokud je score výšší než high score, tak se aktualizuje
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('marketHighScore', highScore);
+                updateHighScoreDisplay();
+            }
 
+            // 1. PŘIPRAVÍME NOVOU FIRMU (ale zatím jen v paměti)
+            let nextItem;
             do {
-                currentRightItem = getRandomItem();
-            } while (currentLeftItem.id === currentRightItem.id);
+                nextItem = getRandomItem();
+            } while (nextItem.id === currentRightItem.id || nextItem.id === currentLeftItem.id);
 
-            renderGame(currentLeftItem, currentRightItem);
-            waiting = false;
+            // 2. VYKRESLÍME JI DO TÉ SKRYTÉ TŘETÍ KARTY (NEXT)
+            nextNameElement.textContent = nextItem.name;
+            nextImageElement.src = nextItem.image;
+            nextMarketCapElement.textContent = "";
 
-            buttonHigherElement.classList.remove('hidden');
-            buttonLowerElement.classList.remove('hidden');
+            mainElement.classList.add('animating');
 
+            setTimeout(() => {
+                currentLeftItem = currentRightItem;
+                currentRightItem = nextItem;
+
+                renderGame(currentLeftItem, currentRightItem);
+
+                waiting = false;
+                buttonHigherElement.classList.remove('hidden');
+                buttonLowerElement.classList.remove('hidden');
+
+                mainElement.classList.remove('animating');
+
+                vsElement.classList.remove('correct');
+                vsElement.classList.remove('wrong');
+                vsElement.textContent = "VS";
+
+            }, 800);
         }else{
             endScreenElement.classList.remove('hidden');
             finalScoreElement.textContent = `Tvé konečné score je: ${score}`
