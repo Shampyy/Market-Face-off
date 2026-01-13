@@ -311,120 +311,139 @@ button:hover {
    ========================================= */
 @media (max-width: 768px) {
 
-    /* 0. FIX PRO CELOU OBRAZOVKU (Zabrání posouvání a uříznutí) */
+    /* 1. ZÁKLAD: Fixní výška obrazovky bez scrollování */
     #game-board {
-        /* dvh = Dynamic Viewport Height (řeší lišty v mobilních prohlížečích) */
-        height: 100dvh;
-        overflow: hidden; /* Zákaz scrollování */
+        height: 100dvh; /* Dynamic viewport height */
         display: flex;
         flex-direction: column;
+        overflow: hidden;
     }
 
-    /* Hlavička se skóre musí být pevná, zbytek se dopočítá */
+    /* 2. HLAVIČKA: Musí být co nejmenší */
     header {
-        flex: 0 0 auto; /* Pevná výška podle obsahu */
-        padding: 10px;
-        z-index: 20;
+        flex: 0 0 auto; /* Nesmršťovat */
+        padding: 5px 0; /* Minimální mezery */
     }
 
-    /* 1. ZMĚNA ROZLOŽENÍ: Hlavní plocha pod sebe */
+    header h1 {
+        font-size: 1.2rem; /* Menší nadpis */
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .score-board {
+        font-size: 0.9rem; /* Menší text skóre */
+        margin-top: 5px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    /* 3. HLAVNÍ PLOCHA: Flexibilní kontejner pro karty */
     #game-board main {
+        flex: 1; /* Zabere veškeré zbylé místo */
+        display: flex;
         flex-direction: column;
-        flex: 1; /* Zabere veškeré zbývající místo po hlavičce */
         position: relative;
-        height: auto; /* Reset výšky */
+        height: auto;
+        min-height: 0; /* Důležité pro flexbox, aby nepřetékal */
     }
 
-    /* 2. KARTY: Roztáhnou se pružně */
+    /* 4. KARTY: Kompaktní a pružné */
     .card {
         width: 100%;
-        flex: 1; /* Každá karta si vezme přesně půlku dostupného místa */
-        height: auto; /* Už ne 50%, ale automaticky */
-        padding: 10px; /* Menší padding na mobilu */
+        flex: 1; /* Každá karta přesně 50% dostupné výšky */
+        display: flex;
+        flex-direction: column;
         justify-content: center; /* Vycentrovat obsah vertikálně */
+        align-items: center;
+        padding: 10px;
+        height: auto; /* Reset pevné výšky */
     }
 
-    /* 3. ÚPRAVA BORDERŮ */
-    #card-left {
-        border-right: none;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-    }
-    #card-right, #card-next {
-        border-right: none;
-    }
-
-    /* 4. POZICE NEXT KARTY (Schovaná dole) */
-    #card-next {
-        position: absolute;
-        top: auto;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 50%; /* Tady musí být 50% výšky kontejneru */
-
-        /* Posuneme ji DOLŮ mimo obrazovku */
-        transform: translate(0, 100%) !important;
-        border-top: 2px solid rgba(255, 255, 255, 0.2);
-        z-index: 5;
-    }
-
-    /* 5. ANIMACE (Svislý posun) */
-    .animating #card-left {
-        transform: translateY(-100%);
-    }
-    .animating #card-right {
-        transform: translateY(-100%);
-    }
-    .animating #card-next {
-        transform: translateY(0) !important;
-    }
-
-    /* 6. ÚPRAVY VELIKOSTÍ PRO MOBIL (Aby se to vešlo) */
-    .text-huge {
-        font-size: 2rem; /* Menší cena */
-        margin: 5px 0;
-    }
-
+    /* 5. LOGA A TEXTY: Drastické zmenšení */
     .card img {
-        width: 70px;  /* Menší logo */
-        height: 70px;
-        margin: 10px 0;
-        padding: 15px; /* Menší vnitřní odsazení */
+        width: 60px;       /* Mnohem menší logo */
+        height: 60px;
+        padding: 12px;
+        margin: 5px 0;     /* Méně místa kolem */
     }
 
     .card h1 {
-        font-size: 1.3rem; /* Menší název firmy */
+        font-size: 1.1rem; /* Menší název firmy */
         margin: 0;
     }
 
-    /* 7. VS KOLEČKO (Musí být uprostřed a menší) */
+    .text-huge {
+        font-size: 1.6rem; /* Menší cena */
+        margin: 2px 0;
+    }
+
+    /* 6. HRANICE MEZI KARTAMI */
+    #card-left {
+        border-right: none;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    #card-right {
+        border-right: none;
+    }
+
+    /* 7. NEXT KARTA (Schovaná) */
+    #card-next {
+        position: absolute;
+        width: 100%;
+        height: 50%;
+        bottom: 0;
+        left: 0;
+        transform: translate(0, 100%);
+        border-top: 2px solid rgba(255, 255, 255, 0.1);
+        z-index: 5;
+    }
+
+    /* 8. VS KOLEČKO: Menší a přesně uprostřed karet */
     .vs {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
-        line-height: 50px;
-        /* Absolutní centrování */
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+        line-height: 40px;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        margin: 0;
-        z-index: 10;
+        z-index: 20;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
 
-    /* 8. TLAČÍTKA (Větší pro prsty, ale kompaktní) */
+    /* 9. TLAČÍTKA: Nalepená dole, ale nad systémovou lištou */
     .buttons {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
+        position: absolute; /* Aby "plavala" nad spodní kartou */
+        bottom: 20px;       /* Odstup od spodu */
+        left: 0;
         width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
         padding: 0 20px;
+        z-index: 30; /* Musí být nad vším */
+        /* Ochrana pro iPhony bez tlačítka (safe area) */
+        padding-bottom: env(safe-area-inset-bottom);
     }
 
-    #btn_higher, #btn_lower {
-        flex: 1; /* Tlačítka se roztáhnou na celou šířku */
+    #btn-higher, #btn-lower, #btn_higher, #btn_lower { /* Pro jistotu obě ID */
+        flex: 1;
         padding: 12px;
         font-size: 1rem;
-        margin: 5px 0;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        max-width: 160px; /* Aby nebyla tlačítka zbytečně široká */
     }
+
+    /* Skryjeme patičku na mobilu, zavazí tam */
+    footer {
+        display: none;
+    }
+
+    /* Animace */
+    .animating #card-left { transform: translateY(-100%); }
+    .animating #card-right { transform: translateY(-100%); }
+    .animating #card-next { transform: translateY(0) !important; }
 }
