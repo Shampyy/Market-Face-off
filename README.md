@@ -15,8 +15,6 @@ Tato aplikace vznikla jako semestrální práce. Hlavním cílem bylo vytvořit 
 - **Responzivita:** Hra je hratelná na desktopu i mobilních zařízeních.
 - **Verzování:** Projekt je verzován pomocí Gitu a hostován na GitHub Pages.
 
-*TODO: LocalStorage pro High Score, API napojení atd*
-
 ## 🛠️ Použité technologie
 
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
