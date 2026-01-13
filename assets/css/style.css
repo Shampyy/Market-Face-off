@@ -311,76 +311,120 @@ button:hover {
    ========================================= */
 @media (max-width: 768px) {
 
-    /* 1. ZMĚNA ROZLOŽENÍ: Karty pod sebe */
-    #game-board main {
+    /* 0. FIX PRO CELOU OBRAZOVKU (Zabrání posouvání a uříznutí) */
+    #game-board {
+        /* dvh = Dynamic Viewport Height (řeší lišty v mobilních prohlížečích) */
+        height: 100dvh;
+        overflow: hidden; /* Zákaz scrollování */
+        display: flex;
         flex-direction: column;
     }
 
-    /* 2. KARTY: Musí zabírat celou šířku, ale jen půlku výšky */
-    .card {
-        width: 100%;
-        height: 50%;
-        padding-top: 20px;
+    /* Hlavička se skóre musí být pevná, zbytek se dopočítá */
+    header {
+        flex: 0 0 auto; /* Pevná výška podle obsahu */
+        padding: 10px;
+        z-index: 20;
     }
 
-    /* 3. ÚPRAVA BORDERŮ (Místo čáry vpravo chceme čáru dole) */
+    /* 1. ZMĚNA ROZLOŽENÍ: Hlavní plocha pod sebe */
+    #game-board main {
+        flex-direction: column;
+        flex: 1; /* Zabere veškeré zbývající místo po hlavičce */
+        position: relative;
+        height: auto; /* Reset výšky */
+    }
+
+    /* 2. KARTY: Roztáhnou se pružně */
+    .card {
+        width: 100%;
+        flex: 1; /* Každá karta si vezme přesně půlku dostupného místa */
+        height: auto; /* Už ne 50%, ale automaticky */
+        padding: 10px; /* Menší padding na mobilu */
+        justify-content: center; /* Vycentrovat obsah vertikálně */
+    }
+
+    /* 3. ÚPRAVA BORDERŮ */
     #card-left {
         border-right: none;
-        border-bottom: 1px solid var(--card-border-light);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
     }
     #card-right, #card-next {
         border-right: none;
     }
 
-    /* 4. POZICE NEXT KARTY: Čeká dole, ne vpravo */
+    /* 4. POZICE NEXT KARTY (Schovaná dole) */
     #card-next {
+        position: absolute;
         top: auto;
         bottom: 0;
-        right: 0;
         left: 0;
         width: 100%;
-        height: 50%;
+        height: 50%; /* Tady musí být 50% výšky kontejneru */
 
-        /* DŮLEŽITÉ: Posuneme ji DOLŮ (Y), ne DOPRAVA (X) */
+        /* Posuneme ji DOLŮ mimo obrazovku */
         transform: translate(0, 100%) !important;
-        border-top: 1px solid rgba(255,255,255,0.1);
+        border-top: 2px solid rgba(255, 255, 255, 0.2);
+        z-index: 5;
     }
 
-    /* 5. ZMĚNA ANIMACE NA SVISLOU (Y osa) */
-
-    /* Levá (teď horní) karta jede nahoru pryč */
+    /* 5. ANIMACE (Svislý posun) */
     .animating #card-left {
         transform: translateY(-100%);
     }
-
-    /* Pravá (teď dolní) karta jede nahoru na místo té horní */
     .animating #card-right {
         transform: translateY(-100%);
     }
-
-    /* Next karta přijíždí zdola */
     .animating #card-next {
         transform: translateY(0) !important;
     }
 
-    /* 6. ÚPRAVY TEXTŮ A OBRÁZKŮ PRO MALÉ DISPLEJE */
+    /* 6. ÚPRAVY VELIKOSTÍ PRO MOBIL (Aby se to vešlo) */
     .text-huge {
-        font-size: 2.5rem;
+        font-size: 2rem; /* Menší cena */
+        margin: 5px 0;
     }
 
     .card img {
-        width: 100px;
-        height: 100px;
+        width: 70px;  /* Menší logo */
+        height: 70px;
         margin: 10px 0;
+        padding: 15px; /* Menší vnitřní odsazení */
     }
 
     .card h1 {
-        font-size: 1.5rem;
+        font-size: 1.3rem; /* Menší název firmy */
+        margin: 0;
     }
 
-    /* Tlačítka vedle sebe, aby se vešla */
+    /* 7. VS KOLEČKO (Musí být uprostřed a menší) */
+    .vs {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        line-height: 50px;
+        /* Absolutní centrování */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0;
+        z-index: 10;
+    }
+
+    /* 8. TLAČÍTKA (Větší pro prsty, ale kompaktní) */
+    .buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        width: 100%;
+        padding: 0 20px;
+    }
+
     #btn_higher, #btn_lower {
-        padding: 10px 20px;
-        font-size: 0.9rem;
+        flex: 1; /* Tlačítka se roztáhnou na celou šířku */
+        padding: 12px;
+        font-size: 1rem;
+        margin: 5px 0;
     }
 }
