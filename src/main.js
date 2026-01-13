@@ -1,262 +1,290 @@
- // src/main.js
+/* =========================================
+   1. GLOBAL STATE (Stav hry)
+   ========================================= */
+const state = {
+    gameData: [],
+    currentLeftItem: null,
+    currentRightItem: null,
+    score: 0,
+    waiting: false,
+    highScore: localStorage.getItem('marketHighScore') || 0
+};
+
+/* =========================================
+   2. DOM ELEMENTS (Všechny prvky z HTML)
+   ========================================= */
+const DOM = {
+    // Obrazovky
+    screens: {
+        start: document.getElementById("start-screen"),
+        game: document.getElementById("game-board"),
+        end: document.getElementById("end-screen"),
+        main: document.querySelector("#game-board main")
+    },
+    // Tlačítka
+    buttons: {
+        start: document.getElementById("btn-start"),
+        restart: document.getElementById("btn-restart"),
+        higher: document.getElementById("btn-higher"),
+        lower: document.getElementById("btn-lower")
+    },
+    // Texty a UI
+    score: document.getElementById("count"),
+    finalScore: document.getElementById("final-score"),
+    highScoreLabels: document.getElementsByClassName("high-score"),
+    vsCircle: document.querySelector(".vs"),
+
+    // Karty
+    left: {
+        name: document.getElementById('left-name'),
+        image: document.getElementById('left-image'),
+        price: document.getElementById('left-marketCap')
+    },
+    right: {
+        name: document.getElementById('right-name'),
+        image: document.getElementById('right-image'),
+        price: document.getElementById('right-marketCap')
+    },
+    next: { // Třetí karta (skrytá)
+        name: document.getElementById('next-name'),
+        image: document.getElementById('next-image'),
+        price: document.getElementById('next-marketCap')
+    }
+};
 
 console.log("Hra se načítá...");
 
- let gameData = [];
- let currentLeftItem;
- let currentRightItem;
- let score = 0;
- let waiting = false;
- let highScore = localStorage.getItem('marketHighScore') || 0;
+/* =========================================
+   3. INITIALIZATION (Start)
+   ========================================= */
+async function init() {
+    try {
+        const response = await fetch('./assets/data/data.json');
+        state.gameData = await response.json();
 
+        // Nastavení počátečních hodnot
+        state.score = 0;
+        updateScoreDisplay();
+        updateHighScoreDisplay();
 
-// Výběr prvků z HTML (DOM Selector)
- const buttonStartElement = document.getElementById("btn_start");
- const startScreenElement = document.getElementById("start-screen");
- const gameBoardElement = document.getElementById("game-board");
- const endScreenElement = document.getElementById("end-screen");
- const mainElement = document.querySelector("#game-board main");
+        // Připravíme data pro hru na pozadí
+        beginNewGame();
+    } catch (error) {
+        console.error("Chyba při načítání dat:", error);
+    }
+}
 
-const countElement = document.getElementById("count");
-const vsElement = document.querySelector(".vs");
-const highScoreElement = document.getElementsByClassName("high-score");
+// Funkce volaná tlačítkem START
+function startGame() {
+    DOM.screens.start.classList.add('hidden');
+    DOM.screens.game.classList.remove("hidden");
+}
 
-const leftNameElement = document.getElementById('left_name');
-const leftImageElement = document.getElementById('left_image');
-const leftMarketCapElement = document.getElementById('left_marketCap');
+function beginNewGame() {
+    state.currentLeftItem = getRandomItem();
+    do {
+        state.currentRightItem = getRandomItem();
+    } while (state.currentLeftItem.id === state.currentRightItem.id);
 
-const rightNameElement = document.getElementById('right_name');
-const rightImageElement = document.getElementById('right_image');
-const rightMarketCapElement = document.getElementById('right_marketCap');
+    state.waiting = false;
+    renderGame(state.currentLeftItem, state.currentRightItem);
 
- const nextNameElement = document.getElementById('next_name');
- const nextImageElement = document.getElementById('next_image');
- const nextMarketCapElement = document.getElementById('next_marketCap');
+    toggleButtons(true);
+}
 
-const buttonHigherElement = document.getElementById('btn_higher');
-const buttonLowerElement = document.getElementById('btn_lower');
-
-const buttonRestartElement = document.getElementById('btn_restart');
-const finalScoreElement = document.getElementById('final-score');
-
- // HLAVNÍ FUNKCE INIT (Start hry)
- async function init() {
-
-     const response = await fetch('./assets/data/data.json');
-     gameData = await response.json();
-     score= 0;
-     updateScoreDisplay();
-     updateHighScoreDisplay()
-     beginNewGame();
- }
-
-// tato funkce spustí hru po kliknutí na tlačítko start
- function startGame() {
-     startScreenElement.classList.add('hidden')
-     gameBoardElement.classList.remove("hidden");
- }
-
- // Zahájení nové hry
- function beginNewGame() {
-     currentLeftItem = getRandomItem();
-     do {
-         currentRightItem = getRandomItem();
-     } while (currentLeftItem.id === currentRightItem.id);
-
-     waiting = false;
-     renderGame(currentLeftItem, currentRightItem);
-     buttonHigherElement.classList.remove('hidden');
-     buttonLowerElement.classList.remove('hidden');
- }
-
- // Aktualizace score
- function updateScoreDisplay() {
-     countElement.textContent = "Skóre: " + score;
- }
-
- function updateHighScoreDisplay() {
-     for (let element of highScoreElement) {
-         element.textContent = `High Score: ${highScore}`;
-     }
- }
-
- // FUNKCE PRO VYKRESLENÍ (Grafika)
- function renderGame(itemLeft, itemRight) {
-
-     leftNameElement.textContent = itemLeft.name;
-     leftImageElement.src = itemLeft.image;
-     leftMarketCapElement.textContent = itemLeft.price.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
-
-     rightNameElement.textContent = itemRight.name;
-     rightImageElement.src = itemRight.image;
-     rightMarketCapElement.textContent = "";
- }
-
- // Funkce pro vygenerování random čísla pro výběr firem
- function getRandomItem() {
-     const randomIndex = Math.floor(Math.random() * gameData.length)
-     return gameData[randomIndex];
- }
-
- // FUNKCE PRO KONTROLU
+/* =========================================
+   4. GAME LOGIC (Herní logika)
+   ========================================= */
 function checkAnswer(guess) {
+    if (state.waiting) return;
+    state.waiting = true;
 
-     if (waiting === true) {
-         return;
-     }
-
-     waiting = true;
-
-    const priceLeft = currentLeftItem.price;
-    const priceRight = currentRightItem.price;
+    const priceLeft = state.currentLeftItem.price;
+    const priceRight = state.currentRightItem.price;
 
     console.log(`Hádáš: ${guess}. Vlevo: ${priceLeft}, Vpravo: ${priceRight}`);
 
-    let jeToSpravne = false;
+    // 1. Vyhodnocení správnosti
+    let isCorrect = false;
+    if (guess === "higher" && priceLeft < priceRight) isCorrect = true;
+    else if (guess === "lower" && priceLeft > priceRight) isCorrect = true;
 
-    if (guess === "higher") {
-        if (priceLeft < priceRight) {
-            jeToSpravne = true;
-        }
+    // 2. Animace čísla
+    animateValue(DOM.right.price, 0, priceRight, 1500);
 
-    } else if (guess === "lower") {
-        if (priceLeft > priceRight) {
-            jeToSpravne = true;
-        }
-    }
-
-    animateValue(rightMarketCapElement, 0, priceRight, 1500);
-
-    // kolečko se zbarví podle toho, jestli je to správně nebo špatně
+    // 3. Zobrazení ✔ nebo ✘ (po 1.5s)
     setTimeout(() => {
-        if (jeToSpravne) {
-            vsElement.classList.add('correct');
-            vsElement.textContent = "✔"
+        if (isCorrect) {
+            DOM.vsCircle.classList.add('correct');
+            DOM.vsCircle.textContent = "✔";
         } else {
-            vsElement.classList.add('wrong');
-            vsElement.textContent = "✘"
+            DOM.vsCircle.classList.add('wrong');
+            DOM.vsCircle.textContent = "✘";
         }
-    },1500);
+    }, 1500);
 
-    // Pokud je odpověď správná, provedeme posun a nové kolo po uplinutí timeru
+    // 4. Rozhodnutí co dál (po 2.5s)
     setTimeout(() => {
-        if (jeToSpravne) {
-            score++;
-            updateScoreDisplay();
-
-            //pokud je score výšší než high score, tak se aktualizuje
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('marketHighScore', highScore);
-                updateHighScoreDisplay();
-            }
-
-            // 1. PŘIPRAVÍME NOVOU FIRMU (ale zatím jen v paměti)
-            let nextItem;
-            do {
-                nextItem = getRandomItem();
-            } while (nextItem.id === currentRightItem.id || nextItem.id === currentLeftItem.id);
-
-            // 2. VYKRESLÍME JI DO TÉ SKRYTÉ TŘETÍ KARTY (NEXT)
-            nextNameElement.textContent = nextItem.name;
-            nextImageElement.src = nextItem.image;
-            nextMarketCapElement.textContent = "";
-
-            mainElement.classList.add('animating');
-
-            setTimeout(() => {
-                currentLeftItem = currentRightItem;
-                currentRightItem = nextItem;
-
-                renderGame(currentLeftItem, currentRightItem);
-
-                waiting = false;
-                buttonHigherElement.classList.remove('hidden');
-                buttonLowerElement.classList.remove('hidden');
-
-                mainElement.classList.remove('animating');
-
-                vsElement.classList.remove('correct');
-                vsElement.classList.remove('wrong');
-                vsElement.textContent = "VS";
-
-            }, 800);
-        }else{
-            endScreenElement.classList.remove('hidden');
-            finalScoreElement.textContent = `Tvé konečné score je: ${score}`
-            countElement.classList.add('invisible');
-
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('marketHighScore', highScore);
-                updateHighScoreDisplay()
-            }
-
+        if (isCorrect) {
+            handleWin();
+        } else {
+            handleLoss();
         }
-
-        vsElement.classList.remove('correct');
-        vsElement.classList.remove('wrong');
-        vsElement.textContent = "VS";
-
-
     }, 2500);
-
 }
 
-// přidání animace čísel
+function handleWin() {
+    state.score++;
+    updateScoreDisplay();
+    checkHighScore();
+
+    // A) Připravíme novou kartu do paměti
+    let nextItem;
+    do {
+        nextItem = getRandomItem();
+    } while (nextItem.id === state.currentRightItem.id || nextItem.id === state.currentLeftItem.id);
+
+    // B) Vykreslíme ji do skryté "Next" karty
+    DOM.next.name.textContent = nextItem.name;
+    DOM.next.image.src = nextItem.image;
+    DOM.next.price.textContent = "";
+
+    // C) Spustíme animaci (posun karet)
+    DOM.screens.main.classList.add('animating');
+
+    // D) Počkáme na dojetí animace (0.8s)
+    setTimeout(() => {
+        // Posun dat: Right -> Left, Next -> Right
+        state.currentLeftItem = state.currentRightItem;
+        state.currentRightItem = nextItem;
+
+        renderGame(state.currentLeftItem, state.currentRightItem);
+
+        // Reset stavu
+        state.waiting = false;
+        toggleButtons(true);
+        DOM.screens.main.classList.remove('animating');
+
+        // Reset VS kolečka
+        resetVsCircle();
+
+    }, 800);
+}
+
+function handleLoss() {
+    DOM.screens.end.classList.remove('hidden');
+    DOM.finalScore.textContent = `Tvé konečné score je: ${state.score}`;
+    DOM.score.classList.add('invisible');
+
+    checkHighScore();
+    resetVsCircle();
+}
+
+function checkHighScore() {
+    if (state.score > state.highScore) {
+        state.highScore = state.score;
+        localStorage.setItem('marketHighScore', state.highScore);
+        updateHighScoreDisplay();
+    }
+}
+
+function getRandomItem() {
+    const randomIndex = Math.floor(Math.random() * state.gameData.length);
+    return state.gameData[randomIndex];
+}
+
+/* =========================================
+   5. UI FUNCTIONS (Vykreslování)
+   ========================================= */
+function renderGame(itemLeft, itemRight) {
+    // Levá karta
+    DOM.left.name.textContent = itemLeft.name;
+    DOM.left.image.src = itemLeft.image;
+    DOM.left.price.textContent = formatCurrency(itemLeft.price);
+
+    // Pravá karta (cenu schováme)
+    DOM.right.name.textContent = itemRight.name;
+    DOM.right.image.src = itemRight.image;
+    DOM.right.price.textContent = "";
+}
+
+function updateScoreDisplay() {
+    DOM.score.textContent = "Skóre: " + state.score;
+}
+
+function updateHighScoreDisplay() {
+    for (let element of DOM.highScoreLabels) {
+        element.textContent = `High Score: ${state.highScore}`;
+    }
+}
+
+function resetVsCircle() {
+    DOM.vsCircle.classList.remove('correct');
+    DOM.vsCircle.classList.remove('wrong');
+    DOM.vsCircle.textContent = "VS";
+}
+
+function toggleButtons(show) {
+    if (show) {
+        DOM.buttons.higher.classList.remove('hidden');
+        DOM.buttons.lower.classList.remove('hidden');
+    } else {
+        DOM.buttons.higher.classList.add('hidden');
+        DOM.buttons.lower.classList.add('hidden');
+    }
+}
+
+// Pomocná funkce pro formátování měny
+function formatCurrency(number) {
+    return number.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+    });
+}
+
+// Animace počítadla
 function animateValue(element, start, end, duration) {
+    const frameDuration = 20;
+    const totalFrames = duration / frameDuration;
+    const increment = (end - start) / totalFrames;
+    let current = start;
 
-     const frameDuration = 20;
-     const totalFrames = duration / frameDuration;
-     const increment = (end - start) / totalFrames;
-
-     let current = start;
-
-     const timer = setInterval(() => {
-         current += increment;
-
-         if (current >= end) {
-             current = end;
-             clearInterval(timer);
-         }
-
-         element.textContent = current.toLocaleString("en-US", {
-             style: "currency",
-             currency: "USD",
-             maximumFractionDigits: 0
-         });
-     }, frameDuration);
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= end) {
+            current = end;
+            clearInterval(timer);
+        }
+        element.textContent = formatCurrency(current);
+    }, frameDuration);
 }
 
- buttonHigherElement.addEventListener('click', () => {
-     checkAnswer('higher');
-     buttonHigherElement.classList.add('hidden');
-     buttonLowerElement.classList.add('hidden');
- });
+/* =========================================
+   6. EVENT LISTENERS (Ovládání)
+   ========================================= */
+DOM.buttons.higher.addEventListener('click', () => {
+    toggleButtons(false);
+    checkAnswer('higher');
+});
 
- buttonLowerElement.addEventListener('click', () => {
-     checkAnswer('lower');
-     buttonHigherElement.classList.add('hidden');
-     buttonLowerElement.classList.add('hidden');
- });
+DOM.buttons.lower.addEventListener('click', () => {
+    toggleButtons(false);
+    checkAnswer('lower');
+});
 
- buttonStartElement.addEventListener('click', () => {
-     startGame()
- })
+DOM.buttons.start.addEventListener('click', startGame);
 
- // při kliknutí na tlačítko se restartuje celá hra
- buttonRestartElement.addEventListener('click', () => {
-     endScreenElement.classList.add('hidden');
-     score = 0;
-     updateScoreDisplay();
+DOM.buttons.restart.addEventListener('click', () => {
+    DOM.screens.end.classList.add('hidden');
+    state.score = 0;
+    updateScoreDisplay();
+    resetVsCircle();
+    DOM.right.price.textContent = "";
+    DOM.score.classList.remove('invisible');
 
-     vsElement.classList.remove('correct');
-     vsElement.classList.remove('wrong');
-     vsElement.textContent = "VS";
-     rightMarketCapElement.textContent = "";
-     countElement.classList.remove('invisible');
+    beginNewGame();
+});
 
-     beginNewGame();
- })
-
- init();
+// Spustíme aplikaci
+init();
