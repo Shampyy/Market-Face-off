@@ -354,11 +354,11 @@ button:hover {
     }
 
     .card img {
-        width: min(25vh, 40vw, 130px);
-        height: min(25vh, 40vw, 130px);
-        padding: 2vh;
+        width: clamp(60px, 18vh, 110px);
+        height: clamp(60px, 18vh, 110px);
+        padding: clamp(8px, 1.5vh, 16px);
         border-radius: 15px;
-        margin: 1vh 0;
+        margin: 0.5vh 0;
     }
 
     .card h1 {
