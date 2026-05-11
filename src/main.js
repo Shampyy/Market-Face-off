@@ -282,6 +282,9 @@ function renderGame(itemLeft, itemRight) {
 
 function updateScoreDisplay() {
     DOM.score.textContent = "Skóre: " + state.score;
+
+    const mob = document.getElementById('count-mobile');
+    if (mob) mob.textContent = "Skóre: " + state.score;
 }
 
 function updateHighScoreDisplay() {

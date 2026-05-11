@@ -1,23 +1,19 @@
 /* =========================================
-   1. VARIABLES (Nastavení barev a fontů)
+   1. VARIABLES
    ========================================= */
 :root {
-    /* Hlavní barvy */
     --bg-gradient: radial-gradient(circle, #1a2a1a 0%, #000000 100%);
     --text-color: #e2e8f0;
     --text-muted: #ddd;
 
-    /* Barvy karet */
     --card-bg-light: rgba(255, 255, 255, 0.02);
     --card-bg-dark: rgba(0, 0, 0, 0.2);
     --card-border-light: rgba(255, 255, 255, 0.05);
 
-    /* UI Elementy */
     --glass-dark: rgba(0, 0, 0, 0.3);
     --glass-modal: rgba(0, 0, 0, 0.60);
     --btn-bg-default: rgba(255, 255, 255, 0.05);
 
-    /* Indikátory stavu */
     --color-green: #28a745;
     --color-green-dark: #1e7e34;
     --color-red: #d11616;
@@ -26,7 +22,7 @@
 }
 
 /* =========================================
-   2. BASE STYLES (Základ stránky)
+   2. BASE STYLES
    ========================================= */
 body {
     margin: 0;
@@ -41,9 +37,8 @@ body {
 }
 
 /* =========================================
-   3. LAYOUT (Rozložení)
+   3. LAYOUT
    ========================================= */
-/* --- Header --- */
 header {
     flex: 0 0 auto;
     padding: 1px;
@@ -67,13 +62,19 @@ header h1 {
     margin-top: 10px;
 }
 
-/* --- Game Board (Kontejner pro hru) --- */
+/* Mobile score bar — hidden on desktop */
+#mobile-score-bar {
+    display: none;
+}
+
+/* Game board: fills remaining height, columns layout */
 #game-board {
     flex: 1;
     display: flex;
     flex-direction: column;
     position: relative;
     width: 100%;
+    overflow: hidden;
 }
 
 #game-board main {
@@ -85,10 +86,22 @@ header h1 {
     overflow: hidden;
 }
 
+/* Controls bar: sits below the cards */
+#game-controls {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 0;
+    gap: 16px;
+    background: var(--glass-dark);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    z-index: 10;
+}
+
 /* =========================================
-   4. SCREENS (Obrazovky Start/Konec)
+   4. SCREENS
    ========================================= */
-/* --- Start Screen --- */
 #start-screen {
     display: flex;
     flex-direction: column;
@@ -106,7 +119,6 @@ header h1 {
     font-size: 18px;
 }
 
-/* --- End Screen (Modal) --- */
 #end-screen {
     position: fixed;
     width: 100%;
@@ -131,17 +143,16 @@ header h1 {
 }
 
 /* =========================================
-   5. COMPONENTS (Herní prvky)
+   5. CARDS
    ========================================= */
-/* --- Cards (Základ) --- */
 .card {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    padding-top: 10vh;
+    justify-content: center;
     align-items: center;
     text-align: center;
+    padding: 10px;
 }
 
 .card img {
@@ -150,7 +161,7 @@ header h1 {
     background: white;
     padding: 20px;
     border-radius: 15px;
-    margin: 20px 0;
+    margin: 12px 0;
     object-fit: contain;
     box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
@@ -158,12 +169,11 @@ header h1 {
 .card h1 { font-size: 2rem; margin: 0; }
 .card h3 { font-size: 1.5rem; color: var(--text-muted); }
 
-/* oddělení karet */
 #card-left, #card-right {
     border-right: 1px solid var(--card-border-light);
 }
 
-/* Next karta - schovaná vpravo */
+/* Next card — hidden to the right on desktop */
 #card-next {
     position: absolute;
     top: 0;
@@ -174,7 +184,9 @@ header h1 {
     z-index: 5;
 }
 
-/* --- VS Circle --- */
+/* =========================================
+   6. VS CIRCLE
+   ========================================= */
 .vs {
     position: absolute;
     top: 50%;
@@ -205,7 +217,9 @@ header h1 {
     border-color: var(--color-red-dark);
 }
 
-/* --- Buttons --- */
+/* =========================================
+   7. BUTTONS
+   ========================================= */
 button {
     padding: 15px 30px;
     margin: 10px;
@@ -225,7 +239,6 @@ button:hover {
     transform: scale(1.05);
 }
 
-/* Barevná tlačítka */
 .btn-green {
     background-color: var(--color-green);
     border-color: var(--color-green);
@@ -247,12 +260,12 @@ button:hover {
 }
 
 .btn-blue {
-    background-color: #1da1f2; /* Pěkná modrá */
+    background-color: #1da1f2;
     border-color: #1da1f2;
     color: white;
     font-weight: bold;
     box-shadow: 0 0 15px rgba(29, 161, 242, 0.4);
-    margin-bottom: 20px; /* Odstup od tlačítka Restart */
+    margin-bottom: 20px;
 }
 .btn-blue:hover {
     background-color: #0c85d0;
@@ -261,7 +274,7 @@ button:hover {
 }
 
 /* =========================================
-   6. TYPOGRAPHY (Texty)
+   8. TYPOGRAPHY
    ========================================= */
 .text-huge {
     font-size: 4rem;
@@ -277,179 +290,137 @@ button:hover {
 .text-red { color: var(--color-red); }
 
 /* =========================================
-   7. UTILITIES & ANIMATIONS (Pomocné třídy)
+   9. UTILITIES & ANIMATIONS
    ========================================= */
 .hidden { display: none !important; }
 .invisible { visibility: hidden; }
 
-/* --- Animace posunu karet --- */
 .animating .card {
     transition: transform 0.8s ease-in-out;
 }
 
-/* 1. Levá karta odjede */
-.animating #card-left {
-    transform: translateX(-100%);
-}
-/* 2. Pravá karta jede na místo levé */
-.animating #card-right {
-    transform: translateX(-100%);
-}
-/* 3. Next karta přijede zprava */
-.animating #card-next {
-    transform: translateX(0);
-}
-/* VS kolečko zmizí */
+.animating #card-left  { transform: translateX(-100%); }
+.animating #card-right { transform: translateX(-100%); }
+.animating #card-next  { transform: translateX(0); }
+
 .animating .vs {
     opacity: 0;
     transition: opacity 0.3s;
 }
 
-
 /* =========================================
-   9. MOBILE RESPONSIVENESS (Úpravy pro mobily)
+   10. RESPONSIVE — MOBILE
    ========================================= */
 @media (max-width: 768px) {
 
-    /* --- 1. ROZLOŽENÍ OBRAZOVKY --- */
-    #game-board {
-        height: 100dvh; /* Přesná výška displeje mobilu */
+    /* Hide desktop header */
+    header { display: none; }
+
+    /* Show mobile score bar at the top */
+    #mobile-score-bar {
         display: flex;
-        flex-direction: column;
-        overflow: hidden; /* Zákaz posouvání */
-    }
-
-    /* --- 2. HLAVIČKA (Co nejmenší) --- */
-    header {
-        flex: 0 0 auto; /* Pevná výška */
-        padding: 5px 0;
-        background: #111; /* Aby byla čitelná */
-        z-index: 50;
-    }
-
-    header h1 {
-        font-size: 1.1rem; /* Malý nadpis */
-        margin: 0;
-        line-height: 1.2;
-    }
-
-    .score-board {
-        margin-top: 2px;
-        font-size: 0.85rem; /* Malé skóre */
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-    }
-
-    /* --- 3. HLAVNÍ PLOCHA PRO KARTY --- */
-    #game-board main {
-        flex: 1; /* Zabere veškeré zbylé místo */
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        height: auto;
-        min-height: 0; /* Důležité pro Flexbox! */
-    }
-
-    /* --- 4. KARTY (Horní a Dolní) --- */
-    .card {
-        width: 100%;
-        flex: 1; /* Každá karta bere přesně 50% dostupného místa */
-        display: flex;
-        flex-direction: column;
-        justify-content: center; /* Vycentrovat obsah svisle */
+        justify-content: space-between;
         align-items: center;
-        padding: 5px; /* Minimální padding */
-        min-height: 0; /* Umožní kartě se zmenšit pod obsah */
+        padding: 8px 16px;
+        font-size: 0.95rem;
+        font-weight: bold;
+        background: var(--glass-dark);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        flex: 0 0 auto;
+        z-index: 10;
+    }
+
+    /* Stack cards vertically */
+    #game-board main {
+        flex-direction: column;
+    }
+
+    /* Each card takes exactly half the available space */
+    .card {
+        flex: 1;
+        justify-content: center;
+        padding: 2vh 2vw;
         overflow: hidden;
     }
 
-    /* Specifická úprava pro dolní kartu, aby tlačítka nelezla přes text */
-    #card-right {
-        justify-content: flex-start; /* Obsah nahoře */
-        padding-top: 20px; /* Odstup od VS kolečka */
+    /* Separator between top and bottom card */
+    #card-left {
+        border-right: none;
+        border-bottom: 1px solid var(--card-border-light);
     }
 
-    /* --- 5. OBSAH KARET (Loga a texty) --- */
+    #card-right {
+        border-right: none;
+    }
+
     .card img {
-        height: 50px;       /* Pevná malá výška loga */
-        width: auto;        /* Šířka se dopočítá */
-        object-fit: contain;
-        margin: 5px 0;
-        background: white;
-        border-radius: 50%;
-        padding: 5px;
+        width: min(25vh, 40vw, 130px);
+        height: min(25vh, 40vw, 130px);
+        padding: 2vh;
+        border-radius: 15px;
+        margin: 1vh 0;
     }
 
     .card h1 {
-        font-size: 1rem; /* Název firmy */
-        margin: 2px 0;
+        font-size: clamp(1rem, 4vh, 1.8rem);
+        margin: 0.3vh 0;
     }
 
-    .text-huge {
-        font-size: 1.3rem; /* Cena */
-        font-weight: bold;
-        margin: 2px 0;
+    .card h3 {
+        font-size: clamp(0.85rem, 2.5vh, 1.3rem);
     }
 
-    /* SKRYTÍ ZBYTEČNÉHO TEXTU (pokud tam nějaký zbyl) */
-    .card p:not(.text-huge) {
-        display: none;
-    }
-
-    /* --- 6. VS KOLEČKO --- */
+    /* VS circle: centered between the two stacked cards */
     .vs {
-        width: 35px;
-        height: 35px;
-        font-size: 0.9rem;
-        line-height: 35px;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        width: 12vmin;
+        height: 12vmin;
+        min-width: 44px;
+        min-height: 44px;
+        font-size: clamp(0.7rem, 3vmin, 1rem);
+        /* Push it above both cards so it doesn't block text */
         z-index: 20;
-        background: #333;
-        border: 2px solid #555;
     }
 
-    /* --- 7. TLAČÍTKA (Plovoucí dole) --- */
-    .buttons {
-        position: absolute;
-        bottom: 15px; /* Odstup od spodního okraje */
-        left: 0;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        padding: 0 15px;
-        z-index: 100;
-        /* Ochrana pro iPhony bez tlačítka (čárka dole) */
-        padding-bottom: env(safe-area-inset-bottom);
-    }
-
-    /* Styl tlačítek na mobilu */
-    #btn_higher, #btn_lower {
-        flex: 1;
-        padding: 12px 0;
-        font-size: 1rem;
-        max-width: 140px;
-        border-radius: 25px; /* Kulatá tlačítka vypadají lépe */
-        box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    }
-
-    /* Skrytí patičky */
-    footer { display: none; }
-
-    /* Fix pro animace */
-    .animating #card-left { transform: translateY(-100%); }
-    .animating #card-right { transform: translateY(-100%); }
-    .animating #card-next { transform: translateY(0) !important; }
-
-    /* Next karta schovaná dole */
+    /* Next card: hidden below the viewport on mobile */
     #card-next {
         position: absolute;
-        bottom: 0; left: 0; width: 100%; height: 50%;
-        transform: translate(0, 100%);
-        border-top: 1px solid rgba(255,255,255,0.1);
+        top: auto;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 50%;
+        transform: translateY(100%);
+    }
+
+    /* Mobile card slide animations */
+    .animating #card-left  { transform: translateY(-100%); }
+    .animating #card-right { transform: translateY(-100%); }
+    .animating #card-next  { transform: translateY(0); }
+
+    /* Controls bar — slightly tighter on mobile */
+    #game-controls {
+        padding: 10px 0;
+        gap: 12px;
+    }
+
+    #game-controls button {
+        padding: clamp(10px, 1.8vh, 18px) clamp(22px, 8vw, 50px);
+        font-size: clamp(0.9rem, 2.2vh, 1.2rem);
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 85%;
+        padding: 20px;
+    }
+
+    .text-huge {
+        font-size: 2.5rem;
     }
 }
