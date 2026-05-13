@@ -14,49 +14,47 @@
     </h1>
     <h2>Dokážeš určit, která firma je větší?</h2>
     <p>
-        Vítejte ve hře Market Face-off. Vaším úkolem je uhádnout, která z 2 ukázaných firem ma větší Tržní kapitalizaci
+        Vítejte ve hře Market Face-off. Vaším úkolem je uhádnout, která z 2 ukázaných firem má větší Tržní kapitalizaci
         (market cap), tedy celkovou hodnota společnosti na burze. Zkuste dosáhnout co nejvyššího skóre!!!
     </p>
     <h2>Hodně štěstí!!</h2>
-    <button id="btn-start" class="btn-green"> Start </button>
-    <h3 class="high-score"> High score: 0</h3>
+    <button id="btn-start" class="btn-green">Start</button>
+    <h3 class="high-score">High score: 0</h3>
 </div>
 
 <div id="game-board" class="hidden">
-    <!-- Desktop header (hidden on mobile via CSS) -->
     <header>
         <h1 class="text-huge text-green">Market <br>
             <span class="text-red">Face-off</span>
         </h1>
-        <h3 id="count"> count: </h3>
-        <h2 class="high-score"> High score: 0</h2>
+        <h3 id="count">count:</h3>
+        <h2 class="high-score">High score: 0</h2>
     </header>
 
-    <!-- Mobile-only score bar -->
     <div id="mobile-score-bar">
         <span id="count-mobile">Skóre: 0</span>
         <span class="high-score">High score: 0</span>
     </div>
 
     <main>
-        <div id="card-left" class="card">
-            <h1 id="left-name">název firmy</h1>
-            <img id="left-image" src="" alt="Logo firmy">
-            <h1 id="left-marketCap">market cap</h1>
+        <div id="card-a" class="card role-left">
+            <h1></h1>
+            <img src="" alt="Logo firmy">
+            <h1></h1>
         </div>
 
         <div class="vs">VS</div>
 
-        <div id="card-right" class="card">
-            <h1 id="right-name">název firmy</h1>
-            <img id="right-image" src="" alt="Logo firmy">
-            <h1 id="right-marketCap">market cap</h1>
+        <div id="card-b" class="card role-right">
+            <h1></h1>
+            <img src="" alt="Logo firmy">
+            <h1></h1>
         </div>
 
-        <div id="card-next" class="card">
-            <h1 id="next-name"></h1>
-            <img id="next-image" src="" alt="Logo firmy">
-            <h1 id="next-marketCap"></h1>
+        <div id="card-c" class="card role-next">
+            <h1></h1>
+            <img src="" alt="Logo firmy">
+            <h1></h1>
         </div>
     </main>
 

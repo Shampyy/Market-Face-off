@@ -6,8 +6,6 @@
     --text-color: #e2e8f0;
     --text-muted: #ddd;
 
-    --card-bg-light: rgba(255, 255, 255, 0.02);
-    --card-bg-dark: rgba(0, 0, 0, 0.2);
     --card-border-light: rgba(255, 255, 255, 0.05);
 
     --glass-dark: rgba(0, 0, 0, 0.3);
@@ -62,12 +60,10 @@ header h1 {
     margin-top: 10px;
 }
 
-/* Mobile score bar — hidden on desktop */
 #mobile-score-bar {
     display: none;
 }
 
-/* Game board: fills remaining height, columns layout */
 #game-board {
     flex: 1;
     display: flex;
@@ -86,7 +82,6 @@ header h1 {
     overflow: hidden;
 }
 
-/* Controls bar: sits below the cards */
 #game-controls {
     flex: 0 0 auto;
     display: flex;
@@ -97,6 +92,8 @@ header h1 {
     background: var(--glass-dark);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     z-index: 10;
+    min-height: 80px;
+    box-sizing: border-box;
 }
 
 /* =========================================
@@ -144,15 +141,28 @@ header h1 {
 
 /* =========================================
    5. CARDS
+   Všechny karty jsou position: absolute — žádná nepřepíná layout mode.
+
+   DESKTOP pozice:
+     role-left  → left: 0%,  transform: none
+     role-right → left: 50%, transform: none
+     role-next  → left: 50%, transform: translateX(100%) — offscreen vpravo
+
+   Klíč: role-next a role-right sdílí stejné left: 50%.
+   Při rotaci se mění POUZE transform → žádný layout přepočet, žádný skok.
    ========================================= */
 .card {
-    flex: 1;
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
     padding: 10px;
+    box-sizing: border-box;
 }
 
 .card img {
@@ -169,20 +179,9 @@ header h1 {
 .card h1 { font-size: 2rem; margin: 0; }
 .card h3 { font-size: 1.5rem; color: var(--text-muted); }
 
-#card-left, #card-right {
-    border-right: 1px solid var(--card-border-light);
-}
-
-/* Next card — hidden to the right on desktop */
-#card-next {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 50%;
-    height: 100%;
-    transform: translateX(100%);
-    z-index: 5;
-}
+.role-left  { left: 0;   transform: translateX(0);    border-right: 1px solid var(--card-border-light); }
+.role-right { left: 50%; transform: translateX(0); }
+.role-next  { left: 50%; transform: translateX(100%); z-index: 5; }
 
 /* =========================================
    6. VS CIRCLE
@@ -287,21 +286,19 @@ button:hover {
 }
 
 .text-green { color: var(--color-green); }
-.text-red { color: var(--color-red); }
+.text-red   { color: var(--color-red); }
 
 /* =========================================
-   9. UTILITIES & ANIMATIONS
+   9. ANIMATIONS
    ========================================= */
-.hidden { display: none !important; }
-.invisible { visibility: hidden; }
-
 .animating .card {
     transition: transform 0.8s ease-in-out;
 }
 
-.animating #card-left  { transform: translateX(-100%); }
-.animating #card-right { transform: translateX(-100%); }
-.animating #card-next  { transform: translateX(0); }
+/* Desktop: posun doleva / doprava */
+.animating .role-left  { transform: translateX(-100%); }
+.animating .role-right { transform: translateX(-100%); }
+.animating .role-next  { transform: translateX(0); }
 
 .animating .vs {
     opacity: 0;
@@ -309,14 +306,18 @@ button:hover {
 }
 
 /* =========================================
-   10. RESPONSIVE — MOBILE
+   10. UTILITIES
+   ========================================= */
+.hidden    { display: none !important; }
+.invisible { visibility: hidden; }
+
+/* =========================================
+   11. RESPONSIVE — MOBILE
    ========================================= */
 @media (max-width: 768px) {
 
-    /* Hide desktop header */
     header { display: none; }
 
-    /* Show mobile score bar at the top */
     #mobile-score-bar {
         display: flex;
         justify-content: space-between;
@@ -330,35 +331,32 @@ button:hover {
         z-index: 10;
     }
 
-    /* Stack cards vertically */
     #game-board main {
         flex-direction: column;
     }
 
-    /* Each card takes exactly half the available space */
+    /* MOBILE pozice (osa Y):
+       role-left  → top: 0%,   transform: none
+       role-right → top: 50%,  transform: none
+       role-next  → top: 50%,  transform: translateY(100%) — offscreen dole
+       Stejný princip: role-next a role-right sdílí top: 50% → žádný skok. */
     .card {
-        flex: 1;
-        justify-content: center;
+        width: 100%;
+        height: 50%;
         padding: 2vh 2vw;
         overflow: hidden;
     }
 
-    /* Separator between top and bottom card */
-    #card-left {
-        border-right: none;
-        border-bottom: 1px solid var(--card-border-light);
-    }
-
-    #card-right {
-        border-right: none;
-    }
+    .role-left  { left: 0; top: 0;   transform: translateY(0);    border-right: none; border-bottom: 1px solid var(--card-border-light); }
+    .role-right { left: 0; top: 50%; transform: translateY(0);    border-right: none; }
+    .role-next  { left: 0; top: 50%; transform: translateY(100%); }
 
     .card img {
-        width: min(25vh, 40vw, 130px);
-        height: min(25vh, 40vw, 130px);
-        padding: 2vh;
+        width: clamp(60px, 18vh, 110px);
+        height: clamp(60px, 18vh, 110px);
+        padding: clamp(8px, 1.5vh, 16px);
         border-radius: 15px;
-        margin: 1vh 0;
+        margin: 0.5vh 0;
     }
 
     .card h1 {
@@ -366,11 +364,6 @@ button:hover {
         margin: 0.3vh 0;
     }
 
-    .card h3 {
-        font-size: clamp(0.85rem, 2.5vh, 1.3rem);
-    }
-
-    /* VS circle: centered between the two stacked cards */
     .vs {
         position: absolute;
         top: 50%;
@@ -381,27 +374,14 @@ button:hover {
         min-width: 44px;
         min-height: 44px;
         font-size: clamp(0.7rem, 3vmin, 1rem);
-        /* Push it above both cards so it doesn't block text */
         z-index: 20;
     }
 
-    /* Next card: hidden below the viewport on mobile */
-    #card-next {
-        position: absolute;
-        top: auto;
-        bottom: 0;
-        right: 0;
-        width: 100%;
-        height: 50%;
-        transform: translateY(100%);
-    }
+    /* Mobile animace: posun nahoru / dolů */
+    .animating .role-left  { transform: translateY(-100%); }
+    .animating .role-right { transform: translateY(-100%); }
+    .animating .role-next  { transform: translateY(0); }
 
-    /* Mobile card slide animations */
-    .animating #card-left  { transform: translateY(-100%); }
-    .animating #card-right { transform: translateY(-100%); }
-    .animating #card-next  { transform: translateY(0); }
-
-    /* Controls bar — slightly tighter on mobile */
     #game-controls {
         padding: 10px 0;
         gap: 12px;
@@ -414,7 +394,6 @@ button:hover {
         white-space: nowrap;
     }
 
-    /* Modal */
     .modal-content {
         width: 85%;
         padding: 20px;
@@ -424,7 +403,7 @@ button:hover {
         font-size: 2.5rem;
     }
 
-    /* Start screen — fit everything on one screen */
+    /* Start screen */
     #start-screen {
         height: 100vh;
         overflow: hidden;
